@@ -1,6 +1,16 @@
 # Complete-Backend-Mastering
 This repository is for complete (Possibly everything related to backend) backend mastering 
 
-# My Backend Programming Languages:
+**My Backend Programming Languages:** [Java](https://github.com/Ankushryuga/java-practical-practice)      |      [Go](https://github.com/Ankushryuga/Golang)
 
-[Java](https://github.com/Ankushryuga/java-practical-practice)      |      [Go](https://github.com/Ankushryuga/Golang)
+**Database:** [Redis] | [MySQL] | [PostgreSQL] | [MongoDB] | [Cassandra]
+
+**API:** [Rest API] | [gRPC+Protobuf] | [GraphQL]
+
+**Security:** [Oauth2.0] | [Spring Security] 
+
+**Gateways:** [API Gateways] | [Load Balancer]
+
+**Cloud:** [AWS] | [GCP]
+
+**Documentation:** [Swagger] | [Zod]
