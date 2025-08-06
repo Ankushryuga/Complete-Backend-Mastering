@@ -14,3 +14,5 @@ This repository is for complete (Possibly everything related to backend) backend
 - **Cloud:** [AWS] | [GCP]
 
 - **Documentation:** [Swagger] | [Zod]
+
+- **Golang Project Architecture**: https://github.com/amitshekhariitbhu/go-backend-clean-architecture
