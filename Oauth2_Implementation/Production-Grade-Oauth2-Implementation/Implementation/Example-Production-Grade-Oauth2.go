@@ -64,8 +64,8 @@ Copy code
 
 // 	// Initialize OAuth2 Config
 // 	oauth2Config = oauth2.Config{
-// 		ClientID:     "1095205211624-cf6oi6q9b3abdcfuib94skdhm6jopsu4.apps.googleusercontent.com",          // Replace with your actual OAuth Client ID
-// 		ClientSecret: "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",      // Replace with your actual OAuth Client Secret
+// 		ClientID:     "",          // Replace with your actual OAuth Client ID
+// 		ClientSecret: "",      // Replace with your actual OAuth Client Secret
 // 		RedirectURL:  "http://localhost:8080/callback",
 // 		Scopes:       []string{"profile", "email"},
 // 		Endpoint:     google.Endpoint,
