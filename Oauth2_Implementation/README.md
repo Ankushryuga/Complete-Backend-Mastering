@@ -18,3 +18,13 @@
 - The user logs in to the OAuth provider and grants permission to the third-party application to access the protected resource.
 - The OAuth provider issues an access token to the third-party application.
 - The third-party application uses the access token to access the protected resource on behalf of the user.
+
+
+**OAuth 2.0 Roles:**
+
+- Resource Owner        : The user or system that owns the protected resources and can grant access to them 
+- Client                : Its a system that requires access to the protected resource with appropriate access token
+- Authorization server  : It receives requests from the client for access tokens and issues them upon successful authentication and consent by the resource owner.
+- Resource server       : A server that protects the user's resources and receives access request from the client and validates an Access token from the client and returns the appropriate resources to it.
+  
+  
