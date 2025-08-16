@@ -1,10 +1,11 @@
 **Oauth2.0**:
 
-- OAuth 2.0 is an authorization framework that enables third-party applications to access protected resources on behalf of a user without requiring the user’s credentials. This is achieved through the use of access tokens, which are issued by an OAuth provider and used by third-party applications to access the user’s resources.
+- OAuth 2.0 is an authorization framework stands for **Open Authroization** that enables third-party applications to access protected resources on behalf of a user without requiring the user’s credentials. This is achieved through the use of access tokens, which are issued by an OAuth provider and used by third-party applications to access the user’s resources.
+- OAuth 2.0 uses Access Tokens
 
 **Overview of OAuth2.0**:
 
-- OAuth 2.0 is an authorization protocol that allows third-party applications to access resources on behalf of a user. It uses access tokens to provide access to resources, which are obtained after successful authentication. There are four roles in OAuth 2.0: Resource Owner, Client, Authorization Server, and Resource Server.
+- OAuth 2.0 is an authorization protocol(Not an authentication protocol) that allows third-party applications to access resources on behalf of a user. It uses access tokens to provide access to resources, which are obtained after successful authentication. There are four roles in OAuth 2.0: Resource Owner, Client, Authorization Server, and Resource Server.
   - Resource Owner: The user who owns the resource that is being accessed by the client.
   - Client: The application that is requesting access to the resource on behalf of the user.
   - Authorization Server: The server that issues access tokens to the client after successful authentication of the user.
