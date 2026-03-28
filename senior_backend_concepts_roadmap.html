@@ -1,0 +1,205 @@
+
+<style>
+* { box-sizing: border-box; }
+.wrap { padding: 1rem; }
+.category { margin-bottom: 1rem; border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); overflow: hidden; }
+.cat-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; user-select: none; }
+.cat-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.cat-count { font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+.chevron { margin-left: auto; font-size: 11px; color: var(--color-text-tertiary); transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
+.cat-body { display: none; padding: 0 14px 12px; }
+.cat-body.open { display: block; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.pill { font-size: 12px; padding: 3px 10px; border-radius: 20px; cursor: pointer; border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); background: var(--color-background-secondary); transition: background 0.15s; }
+.pill:hover { background: var(--color-background-tertiary); }
+.pill.have { background: #EAF3DE; color: #27500A; border-color: #97C459; }
+.pill.have:hover { background: #C0DD97; }
+@media (prefers-color-scheme: dark) {
+  .pill.have { background: #27500A; color: #C0DD97; border-color: #3B6D11; }
+  .pill.have:hover { background: #173404; }
+}
+.progress-bar-wrap { height: 4px; background: var(--color-background-tertiary); border-radius: 2px; margin-top: 6px; }
+.progress-bar { height: 100%; border-radius: 2px; transition: width 0.4s; }
+.legend { display: flex; gap: 16px; margin-bottom: 12px; font-size: 12px; color: var(--color-text-secondary); align-items: center; flex-wrap: wrap; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; text-align: center; }
+.stat-val { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.stat-label { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+</style>
+<div class="wrap">
+  <div class="legend">
+    <span><span class="legend-dot" style="background:#97C459"></span>You have this</span>
+    <span><span class="legend-dot" style="background:var(--color-border-secondary)"></span>To learn — click any topic</span>
+  </div>
+  <div class="summary">
+    <div class="stat"><div class="stat-val" id="have-count">0</div><div class="stat-label">You have</div></div>
+    <div class="stat"><div class="stat-val" id="total-count">0</div><div class="stat-label">Total topics</div></div>
+    <div class="stat"><div class="stat-val" id="pct">0%</div><div class="stat-label">Coverage</div></div>
+  </div>
+  <div id="categories"></div>
+</div>
+<script>
+const data = [
+  {
+    id: "api", label: "API design", color: "#378ADD", barColor: "#185FA5",
+    topics: [
+      {t:"REST API", have:true}, {t:"gRPC + Protobuf", have:true}, {t:"GraphQL", have:true},
+      {t:"WebSockets", have:false}, {t:"API versioning", have:false}, {t:"Rate limiting", have:false},
+      {t:"API Gateway", have:true}, {t:"OpenAPI / Swagger", have:true}, {t:"Idempotency", have:false},
+      {t:"Pagination patterns", have:false}, {t:"HATEOAS", have:false}
+    ]
+  },
+  {
+    id: "arch", label: "Architecture patterns", color: "#7F77DD", barColor: "#534AB7",
+    topics: [
+      {t:"Microservices", have:true}, {t:"Monolithic", have:true}, {t:"Distributed systems", have:true},
+      {t:"Event-driven (EDA)", have:true}, {t:"CQRS", have:false}, {t:"Event sourcing", have:false},
+      {t:"Saga pattern", have:false}, {t:"Hexagonal architecture", have:false}, {t:"Domain-driven design", have:false},
+      {t:"Service mesh", have:false}, {t:"BFF pattern", have:false}, {t:"Strangler fig", have:false}
+    ]
+  },
+  {
+    id: "db", label: "Databases & storage", color: "#1D9E75", barColor: "#0F6E56",
+    topics: [
+      {t:"PostgreSQL", have:true}, {t:"MySQL", have:true}, {t:"MongoDB", have:true},
+      {t:"Redis", have:true}, {t:"Cassandra", have:true}, {t:"Database indexing", have:true},
+      {t:"Query optimisation", have:true}, {t:"ACID vs BASE", have:false}, {t:"CAP theorem", have:false},
+      {t:"Database sharding", have:false}, {t:"Replication", have:false}, {t:"Connection pooling", have:false},
+      {t:"Data partitioning", have:false}, {t:"Time-series DBs", have:false}, {t:"Search engines (Elasticsearch)", have:false}
+    ]
+  },
+  {
+    id: "concurrency", label: "Concurrency & performance", color: "#BA7517", barColor: "#854F0B",
+    topics: [
+      {t:"Goroutines / threads", have:true}, {t:"Race conditions", have:false}, {t:"Mutex & locks", have:false},
+      {t:"Deadlock prevention", have:false}, {t:"Connection pooling", have:false}, {t:"Async processing", have:false},
+      {t:"Worker pools", have:false}, {t:"Backpressure", have:false}, {t:"Profiling & benchmarking", have:false},
+      {t:"Memory management", have:false}
+    ]
+  },
+  {
+    id: "messaging", label: "Messaging & streaming", color: "#D85A30", barColor: "#993C1D",
+    topics: [
+      {t:"Kafka", have:true}, {t:"Message queues", have:false}, {t:"RabbitMQ", have:false},
+      {t:"Pub/Sub pattern", have:false}, {t:"Dead letter queues", have:false}, {t:"At-least-once delivery", have:false},
+      {t:"Exactly-once semantics", have:false}, {t:"Stream processing", have:false}, {t:"Consumer groups", have:false}
+    ]
+  },
+  {
+    id: "infra", label: "Cloud & infrastructure", color: "#378ADD", barColor: "#0C447C",
+    topics: [
+      {t:"AWS (EC2, S3, Lambda)", have:true}, {t:"Azure", have:true}, {t:"Docker", have:true},
+      {t:"Kubernetes", have:true}, {t:"Terraform", have:true}, {t:"Helm", have:true},
+      {t:"CI/CD pipelines", have:true}, {t:"Service discovery", have:false}, {t:"Load balancing", have:false},
+      {t:"Auto-scaling", have:false}, {t:"Serverless", have:false}, {t:"CDN", have:false},
+      {t:"Infrastructure as Code", have:true}
+    ]
+  },
+  {
+    id: "observability", label: "Observability", color: "#639922", barColor: "#3B6D11",
+    topics: [
+      {t:"Grafana", have:true}, {t:"Prometheus", have:true}, {t:"Distributed tracing", have:true},
+      {t:"Structured logging", have:true}, {t:"SLO / SLA / SLI", have:false}, {t:"Alerting strategy", have:false},
+      {t:"OpenTelemetry", have:false}, {t:"Error tracking", have:false}, {t:"Chaos engineering", have:false}
+    ]
+  },
+  {
+    id: "security", label: "Security", color: "#E24B4A", barColor: "#A32D2D",
+    topics: [
+      {t:"OAuth2.0", have:true}, {t:"OIDC", have:true}, {t:"SSO", have:true}, {t:"JWT", have:true},
+      {t:"mTLS", have:false}, {t:"Secret management", have:false}, {t:"RBAC / ABAC", have:false},
+      {t:"SQL injection prevention", have:false}, {t:"OWASP top 10", have:false},
+      {t:"Zero trust architecture", have:false}, {t:"Encryption at rest/transit", have:false}
+    ]
+  },
+  {
+    id: "design", label: "System design", color: "#7F77DD", barColor: "#3C3489",
+    topics: [
+      {t:"HLD", have:true}, {t:"LLD", have:true}, {t:"CAP theorem", have:false},
+      {t:"Consistent hashing", have:false}, {t:"Rate limiting patterns", have:false}, {t:"Circuit breaker", have:false},
+      {t:"Bulkhead pattern", have:false}, {t:"Retry with backoff", have:false}, {t:"Idempotency keys", have:false},
+      {t:"Distributed locks", have:false}, {t:"Leader election", have:false}
+    ]
+  },
+  {
+    id: "testing", label: "Testing & quality", color: "#1D9E75", barColor: "#085041",
+    topics: [
+      {t:"Unit testing", have:true}, {t:"Integration testing", have:true}, {t:"Load testing (k6, JMeter)", have:true},
+      {t:"TDD", have:true}, {t:"Contract testing", have:false}, {t:"Mutation testing", have:false},
+      {t:"Chaos testing", have:false}, {t:"E2E testing", have:false}, {t:"SonarQube", have:true}
+    ]
+  },
+  {
+    id: "genai", label: "GenAI & ML backend", color: "#D85A30", barColor: "#712B13",
+    topics: [
+      {t:"LLMs", have:true}, {t:"RAG pipelines", have:true}, {t:"AI Agents", have:true},
+      {t:"Fine-tuning", have:true}, {t:"Vector databases", have:false}, {t:"Embeddings", have:false},
+      {t:"LLM orchestration", have:false}, {t:"Prompt engineering", have:false}, {t:"Model serving", have:false}
+    ]
+  }
+];
+
+function render() {
+  const container = document.getElementById('categories');
+  container.innerHTML = '';
+  let totalHave = 0, totalAll = 0;
+
+  data.forEach(cat => {
+    const have = cat.topics.filter(t => t.have).length;
+    const total = cat.topics.length;
+    const pct = Math.round((have / total) * 100);
+    totalHave += have; totalAll += total;
+
+    const div = document.createElement('div');
+    div.className = 'category';
+
+    const header = document.createElement('div');
+    header.className = 'cat-header';
+    header.innerHTML = `
+      <span style="width:10px;height:10px;border-radius:50%;background:${cat.color};flex-shrink:0"></span>
+      <span class="cat-title">${cat.label}</span>
+      <span class="cat-count" style="background:${cat.color}22;color:${cat.barColor}">${have}/${total}</span>
+      <span class="chevron" id="chev-${cat.id}">&#9660;</span>
+    `;
+
+    const body = document.createElement('div');
+    body.className = 'cat-body open';
+    body.id = 'body-' + cat.id;
+
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar-wrap';
+    bar.innerHTML = `<div class="progress-bar" style="width:${pct}%;background:${cat.color}"></div>`;
+    body.appendChild(bar);
+
+    const pills = document.createElement('div');
+    pills.className = 'pills';
+    cat.topics.forEach(topic => {
+      const p = document.createElement('span');
+      p.className = 'pill' + (topic.have ? ' have' : '');
+      p.textContent = topic.t;
+      p.onclick = () => sendPrompt(`Explain ${topic.t} for a senior backend engineer`);
+      pills.appendChild(p);
+    });
+    body.appendChild(pills);
+    div.appendChild(header);
+    div.appendChild(body);
+
+    header.onclick = () => {
+      const b = document.getElementById('body-' + cat.id);
+      const c = document.getElementById('chev-' + cat.id);
+      b.classList.toggle('open');
+      c.classList.toggle('open');
+    };
+
+    container.appendChild(div);
+  });
+
+  document.getElementById('have-count').textContent = totalHave;
+  document.getElementById('total-count').textContent = totalAll;
+  document.getElementById('pct').textContent = Math.round((totalHave/totalAll)*100) + '%';
+}
+
+render();
+</script>
